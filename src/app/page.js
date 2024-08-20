@@ -1,95 +1,69 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+"use client";
+import { useState } from "react";
+import styles from "../styles/Home.module.css";
 
 export default function Home() {
+  const [num, setNum] = useState(0);
+  const [history, setHistory] = useState([]);
+  const [future, setFuture] = useState([]);
+
+  const updateNum = (newNum) => {
+    if (newNum >= 0 && newNum <= 150) {
+      setHistory([...history, num]);
+      setNum(newNum);
+      setFuture([]);
+    }
+  };
+
+  const add = () => updateNum(num + 1);
+  const subtract = () => updateNum(num - 1);
+
+  const undo = () => {
+    if (history.length > 0) {
+      const lastNum = history.pop();
+      setFuture([num, ...future]);
+      setNum(lastNum);
+      setHistory([...history]);
+    }
+  };
+
+  const redo = () => {
+    if (future.length > 0) {
+      const nextNum = future.shift();
+      setHistory([...history, num]);
+      setNum(nextNum);
+      setFuture([...future]);
+    }
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{" "}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
+    <>
+      <div className={styles.container}>
+        <h1 className={styles.heading}>Jarurat Care</h1>
+        <h1>Counter: {num}</h1>
+        <div className={styles.buttonContainer}>
+          <button onClick={subtract} disabled={num <= 0}>
+            -1
+          </button>
+          <button onClick={add} disabled={num >= 150}>
+            +1
+          </button>
+        </div>
+        <div className={styles.progressBarContainer}>
+          <div
+            className={styles.progressBar}
+            style={{ width: `${(num / 150) * 100}%` }}
+          />
+        </div>
+        <div className={styles.buttonContainer}>
+          <button onClick={undo} disabled={history.length === 0}>
+            Undo
+          </button>
+          <button onClick={redo} disabled={future.length === 0}>
+            Redo
+          </button>
         </div>
       </div>
-
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore starter templates for Next.js.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
+    </>
   );
 }
